@@ -1,0 +1,6 @@
+@SmartCoffeMachine_HostAddress = http://localhost:5103
+
+GET {{SmartCoffeMachine_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
