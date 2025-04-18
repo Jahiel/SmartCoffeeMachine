@@ -69,7 +69,7 @@ The backend is built with **ASP.NET Core**, with a clean separation of concerns 
 
 ---
 
-## Project Structure
+## Project Structures
 
 ```
 SmartCoffeeMachine/
