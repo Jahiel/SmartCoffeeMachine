@@ -1,27 +1,31 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
+using SmartCoffeMachine.Core.CoffeeMachine.Class;
+using SmartCoffeMachine.Core.CoffeeMachine.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Ajout des services nécessaires à l'application
-builder.Services.AddControllers(); // Active les contrôleurs via attributs [ApiController], [Route], etc.
-builder.Services.AddEndpointsApiExplorer(); // Pour Swagger
-builder.Services.AddSwaggerGen(); // Génère la doc Swagger
+//Adding singleton to simulate current machine status (if it is turned on, it stay turned on until the project restart)
+builder.Services.AddSingleton<ICoffeeMachine, CoffeeMachineStub>();
 
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    //Enable Swagger annotations for documentation
+    c.EnableAnnotations();
+    //TODO Add XML comments that are writed over each route and over each property
+});
 var app = builder.Build();
 
-// Configuration du pipeline HTTP
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection(); // Redirige automatiquement le HTTP vers HTTPS
-app.UseAuthorization(); // Même si pas utilisé, c’est standard dans le pipeline
+app.UseHttpsRedirection();
+app.UseAuthorization();
 
-app.MapControllers(); // Active les routes de tes contrôleurs
+app.MapControllers();
 
 app.Run();
