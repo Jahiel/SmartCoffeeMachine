@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using SmartCoffeeMachine.Core.CoffeeMachine.Class;
 using SmartCoffeMachine.Core.CoffeeMachine.Class;
 using SmartCoffeMachine.Core.CoffeeMachine.Interface;
 
@@ -14,6 +16,9 @@ builder.Services.AddSwaggerGen(c =>
     c.EnableAnnotations();
     //TODO Add XML comments that are writed over each route and over each property
 });
+builder.Services.AddDbContext<CoffeeMachineDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 var app = builder.Build();
 
 
