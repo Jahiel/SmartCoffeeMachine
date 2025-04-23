@@ -1,16 +1,17 @@
-name: Test GitHub Action
+name: Simple Test
 
-on:
+on: 
   push:
-    branches: [ '*' ]
+    branches: 
+      - "*"
 
 jobs:
-  test:
+  example_job:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Print message
-        run: echo "GitHub Actions fonctionne !"
+      - name: Hello World
+        run: echo "GitHub Actions triggered!"
