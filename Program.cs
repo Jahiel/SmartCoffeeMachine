@@ -16,12 +16,22 @@ builder.Services.AddSwaggerGen(c =>
     c.EnableAnnotations();
     //TODO Add XML comments that are writed over each route and over each property
 });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 builder.Services.AddDbContext<CoffeeMachineDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
-
+app.UseCors("AllowAllOrigins");
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
