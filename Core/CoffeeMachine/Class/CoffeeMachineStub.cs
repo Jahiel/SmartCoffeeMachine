@@ -31,6 +31,10 @@ namespace SmartCoffeMachine.Core.CoffeeMachine.Class
         public CoffeeMachineStub()
         {
             _randomStateGenerator = new Random();
+            WaterLevelState = GetRandomState();
+            BeanFeedState = GetRandomState();
+            WasteCoffeeState = GetRandomState();
+            WaterTrayState = GetRandomState();
         }
 
         public async Task TurnOnAsync()
@@ -64,13 +68,26 @@ namespace SmartCoffeMachine.Core.CoffeeMachine.Class
                 throw new InvalidOperationException("Invalid state");
 
             //Simulating delay
-            await Task.Delay(100);
             IsMakingCoffee = true;
             // [Make the coffee]
-            Thread.Sleep(10000);
+            //Thread.Sleep(10000);
+            //sleep has been removed in order to dodge the thread lock
+            await Task.Delay(10000);
             IsMakingCoffee = false;
         }
         // Randomly create a state for testing. This can be replaced as required.
-        private EnumState GetRandomState() => _randomStateGenerator.Next(1, 10) == 10 ? EnumState.Alert : EnumState.Okay;
+        private EnumState GetRandomState()
+        {
+            //Optimising state level
+            int roll = _randomStateGenerator.Next(1, 101); // 1 à 100
+            return roll switch
+            {
+                <= 5 => EnumState.Alert,
+                <= 20 => EnumState.Warning,
+                <= 45 => EnumState.Medium,
+                <= 75 => EnumState.Okay,
+                _ => EnumState.Optimal,
+            };
+        }
     }
 }

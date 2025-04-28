@@ -1,12 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using SmartCoffeeMachine.Core.CoffeeMachine.Class;
 using SmartCoffeMachine.Core.CoffeeMachine.Class;
-using SmartCoffeMachine.Core.CoffeeMachine.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Adding singleton to simulate current machine status (if it is turned on, it stay turned on until the project restart)
-builder.Services.AddSingleton<ICoffeeMachine, CoffeeMachineStub>();
+builder.Services.AddSingleton<CoffeeMachineStub>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

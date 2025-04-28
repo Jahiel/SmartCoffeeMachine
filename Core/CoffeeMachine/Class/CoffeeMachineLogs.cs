@@ -1,22 +1,23 @@
-﻿namespace SmartCoffeeMachine.Core.CoffeeMachine.Class
+﻿using SmartCoffeeMachine.Core.CoffeeMachine.Enum;
+
+namespace SmartCoffeeMachine.Core.CoffeeMachine.Class
 {
     /// <summary>
     /// Class for logging every call made on the API
     /// </summary>
     public class CoffeeMachineLogs
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
-        private DateTime? _timeStamp;
-        public DateTime? TimeStamp
-        {
-            get => _timeStamp ??= DateTime.Now;
-            set => _timeStamp = value ?? DateTime.Now;
-        }
+        public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
 
-        public string Action { get; set; }
+        public EnumLog Action { get; set; }
 
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
+
+        public string? ParametersJson { get; set; }
+
+        public string? ResultsJson { get; set; }
 
         public string? ErrorMessage { get; set; }
     }
