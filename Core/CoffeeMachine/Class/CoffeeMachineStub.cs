@@ -20,7 +20,7 @@ namespace SmartCoffeMachine.Core.CoffeeMachine.Class
         public EnumState WaterTrayState { get; private set; }
 
         //Say if the coffee machine is currently in alert or not
-        private bool IsInAlertState => WaterLevelState == EnumState.Alert
+        public bool IsInAlertState => WaterLevelState == EnumState.Alert
                                        || BeanFeedState == EnumState.Alert
                                        || WasteCoffeeState == EnumState.Alert
                                        || WaterTrayState == EnumState.Alert;

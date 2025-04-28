@@ -11,5 +11,7 @@ namespace SmartCoffeeMachine.V1.Models.Get
 
         //The coffee machine is currently making coffee or not
         public bool IsMakingCoffee => _coffeeMachine.IsMakingCoffee;
+
+        public bool IsInAlert => _coffeeMachine.IsInAlertState;
     }
 }
