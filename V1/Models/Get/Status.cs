@@ -2,6 +2,9 @@
 
 namespace SmartCoffeeMachine.V1.Models.Get
 {
+    /// <summary>
+    /// Status modal sent by API
+    /// </summary>
     public class Status : CoffeeMachine
     {
         public Status(CoffeeMachineStub stub) : base(stub) { }

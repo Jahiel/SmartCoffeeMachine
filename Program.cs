@@ -25,6 +25,9 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
+
+// Register the CoffeeMachineDbContext with the dependency injection container,
+// using the SQL Server provider and the connection string named "DefaultConnection".
 builder.Services.AddDbContext<CoffeeMachineDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

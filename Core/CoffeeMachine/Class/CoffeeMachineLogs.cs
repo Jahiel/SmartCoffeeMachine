@@ -9,7 +9,7 @@ namespace SmartCoffeeMachine.Core.CoffeeMachine.Class
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
+        public DateTime TimeStamp { get; set; } = DateTime.Now;
 
         public EnumLog Action { get; set; }
 

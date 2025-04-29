@@ -7,6 +7,8 @@ This project implements the backend for a smart coffee machine system. The appli
 The backend is built with **ASP.NET Core**, with a clean separation of concerns using **MVC architecture**. Data persistence is managed through **Entity Framework Core** and a relational database (SQL Server or SQLite for development).
 
 ---
+## 🔎 Preview
+![swagger](./assets/swagger.png)
 
 ## Features
 
@@ -15,9 +17,8 @@ The backend is built with **ASP.NET Core**, with a clean separation of concerns 
 - Control the coffee machine (Turn On, Turn Off, Make Coffee)
 - RESTful API to expose all relevant functionality
 - Utilization statistics:
-  - First and last cup time per day
-  - Average cups per day and per hour
-- Robust and scalable data model
+  - Cups of coffee made per day
+  - Cups of coffee made per week
 
 ---
 
@@ -43,8 +44,8 @@ The backend is built with **ASP.NET Core**, with a clean separation of concerns 
 
 1. **Clone the repository**  
    ```bash
-   git clone https://your-repo-url.git
-   cd SmartCoffeeMachineBackend
+   git clone https://github.com/Jahiel/SmartCoffeeMachine.git
+   cd SmartCoffeeMachine
    ```
 
 2. **Set up the database**
@@ -73,14 +74,17 @@ The backend is built with **ASP.NET Core**, with a clean separation of concerns 
 
 ```
 SmartCoffeeMachine/
-├── Controllers/         # API endpoints
-├── Services/            # Business logic
-├── Repositories/        # Data access layer
-├── Models/              # Domain models
-├── DTOs/                # Data Transfer Objects
-├── Migrations/          # EF Core migrations
-├── Interfaces/          # Interfaces for abstraction and DI
-├── Logging/             # Logging and auditing logic
+├── V1/                         # First version
+    ├── Controllers/            # API endpoints
+    ├── Models/                 # API models used in response
+        ├── Get/                # API models used in GET response
+    ├── Core/                   # Business logic
+        ├── CoffeeMachine/            
+            ├── Class/          # Business Class 
+            ├── Interfaces/     # Interfaces for abstraction and DI
+            ├── Enum/           # Enum
+            ├── Enum/           # Struct
+    ├── Migrations/          # EF Core migrations
 ├── Program.cs           # Entry point
 └── appsettings.json     # Configuration
 ```
@@ -89,39 +93,18 @@ SmartCoffeeMachine/
 
 ## API Endpoints (Summary)
 
-| Endpoint                          | Method | Description                    |
-|----------------------------------|--------|--------------------------------|
-| `/api/machine/state`             | GET    | Get current machine state      |
-| `/api/machine/alerts`            | GET    | Get current alerts             |
-| `/api/machine/action/on`         | POST   | Turn on machine                |
-| `/api/machine/action/off`        | POST   | Turn off machine               |
-| `/api/machine/action/makecoffee` | POST   | Make a cup of coffee           |
-| `/api/utilisation/daily`         | GET    | Daily cup statistics           |
-| `/api/utilisation/hourly`        | GET    | Hourly cup statistics          |
+| Endpoint                              | Method | Description                    |
+|---------------------------------------|--------|--------------------------------|
+| `/api/v1/CoffeeMachine`               | GET    | Test if API is working         |
+| `/api/v1/CoffeeMachine/state`         | GET    | Get current machine state      |
+| `/api/v1/CoffeeMachine/alerts`        | GET    | Get current alerts             |
+| `/api/v1/CoffeeMachine/turn-on`       | POST   | Turn on machine                |
+| `/api/v1/CoffeeMachine/turn-off`      | POST   | Turn off machine               |
+| `/api/v1/CoffeeMachine/coffee`        | POST   | Make a cup of coffee           |
+| `/api/v1/CoffeeMachine/coffees/daily` | GET    | Daily cup statistics           |
+| `/api/v1/CoffeeMachine/coffees/weekly`| GET    | Hourly cup statistics          |
 
 Full documentation available via Swagger.
-
----
-
-## How to Prioritize Tasks
-
-### Critical (First)
-- Design domain models and integrate ICoffeeMachine interface
-- Implement REST endpoints for core machine actions
-- Implement logging and persistence of usage
-
-### Important (Second)
-- Implement alert/status system
-- Basic web UI integration (status + control)
-- Usage analytics: daily/hourly stats
-
-### Optional / Future
-- Advanced analytics (e.g., trends, charts)
-- Notifications or real-time updates (SignalR)
-- Admin dashboard for maintenance
-- Multitenancy / multi-machine support
-
----
 
 ## License
 

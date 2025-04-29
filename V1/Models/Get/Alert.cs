@@ -3,6 +3,9 @@ using SmartCoffeMachine.Core.CoffeeMachine.Enum;
 
 namespace SmartCoffeeMachine.V1.Models.Get
 {
+    /// <summary>
+    /// Alert model sent by API
+    /// </summary>
     public class Alert : CoffeeMachine
     {
         public Alert(CoffeeMachineStub stub) : base(stub) { }

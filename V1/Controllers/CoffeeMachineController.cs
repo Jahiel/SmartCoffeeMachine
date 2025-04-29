@@ -10,6 +10,9 @@ using SmartCoffeMachine.Core.CoffeeMachine.Struct;
 using Swashbuckle.AspNetCore.Annotations;
 namespace SmartCoffeMachine.V1.Controllers
 {
+    /// <summary>
+    /// API controller, every actions is logged in the database
+    /// </summary>
     [ApiController]
     [Route("api/v1/[controller]")]
     [Tags("CoffeeMachine")]
@@ -18,6 +21,11 @@ namespace SmartCoffeMachine.V1.Controllers
         private readonly CoffeeMachineStub _coffeeMachine;
         private readonly CoffeeMachineDbContext _dbContext;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="coffeeMachine"></param>
+        /// <param name="dbContext"></param>
         public CoffeeMachineController(CoffeeMachineStub coffeeMachine, CoffeeMachineDbContext dbContext)
         {
             _coffeeMachine = coffeeMachine;
@@ -25,7 +33,7 @@ namespace SmartCoffeMachine.V1.Controllers
         }
 
         /// <summary>
-        /// Just a simple test route to check if api is correctly working or not
+        /// Just a simple test route to check if api is correctly working or not, no need for logging
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -147,7 +155,7 @@ namespace SmartCoffeMachine.V1.Controllers
             try
             {
                 if (!_coffeeMachine.IsMakingCoffee)
-                    _ = Task.Run(() => _coffeeMachine.MakeCoffeeAsync(options));
+                    await _coffeeMachine.MakeCoffeeAsync(options);
                 else
                     return BadRequest("Coffee is already being made");
                 await LogActions(EnumLog.Coffee, "Making coffee", null, options);
@@ -175,6 +183,7 @@ namespace SmartCoffeMachine.V1.Controllers
         [SwaggerResponse((int)HttpStatusCode.BadRequest, "Failed to retrieve coffees")]
         public IActionResult GetDailyCoffees()
         {
+            ///Possible evolution : Handle a page(s) parameter (in the route of the get) to get a fixed number of result and change page (1,2,3,...) on every call
             var dailyStats = _dbContext.Logs
                 .Where(log => log.Action == EnumLog.Coffee)
                 .GroupBy(log => new { log.TimeStamp.Date })
@@ -183,7 +192,7 @@ namespace SmartCoffeMachine.V1.Controllers
                     Date = group.Key.Date,
                     CoffeesMade = group.Count()
                 })
-                .OrderByDescending(stats => stats.Date)
+                .OrderBy(stats => stats.Date)
                 .ToList();
 
             return Ok(dailyStats);
@@ -198,6 +207,7 @@ namespace SmartCoffeMachine.V1.Controllers
         [SwaggerResponse((int)HttpStatusCode.BadRequest, "Failed to retrieve coffees")]
         public IActionResult GetWeeklyCoffees()
         {
+            ///Possible evolution : Handle a page(s) parameter (in the route of the get) to get a fixed number of result and change page (1,2,3,...) on every call
             var logs = _dbContext.Logs
                 .Where(log => log.Action == EnumLog.Coffee)
                 .ToList();
@@ -210,7 +220,7 @@ namespace SmartCoffeMachine.V1.Controllers
                     Week = group.Key,
                     CoffeesMade = group.Count()
                 })
-                .OrderByDescending(stats => stats.Week)
+                .OrderBy(stats => stats.Week)
                 .ToList();
 
             return Ok(weeklyStats);
@@ -219,7 +229,7 @@ namespace SmartCoffeMachine.V1.Controllers
 
 
         /// <summary>
-        /// Function to log everyaction made on the coffeeMachine
+        /// Function to log every action made on the coffeeMachine
         /// </summary>
         /// <param name="LogType"></param>
         /// <param name="status"></param>
