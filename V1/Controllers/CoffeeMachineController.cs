@@ -189,19 +189,17 @@ namespace SmartCoffeMachine.V1.Controllers
                 {
                     group.Key.DayOfWeekNumber,
                     group.Key.Date,
-                    CoffeesCount = group.Count()
+                    CoffeesCount = group.Count(),
+                    FirstCupTime = group.Min(log => log.TimeStamp),
+                    LastCupTime = group.Max(log => log.TimeStamp)
                 })
                 .GroupBy(day => day.DayOfWeekNumber)
                 .Select(group => new DailyCoffeeStats
                 {
                     DayOfWeekNumber = group.Key,
                     CoffeesMade = Math.Round(group.Average(g => g.CoffeesCount)),
-                    FirstCupTime = _dbContext.Logs
-                        .Where(log => log.Action == EnumLog.Coffee && log.DayOfWeekNumber == group.Key)
-                        .Min(log => log.TimeStamp).TimeOfDay,
-                    LastCupTime = _dbContext.Logs
-                        .Where(log => log.Action == EnumLog.Coffee && log.DayOfWeekNumber == group.Key)
-                        .Max(log => log.TimeStamp).TimeOfDay
+                    FirstCupTime = group.Min(g => g.FirstCupTime).TimeOfDay,
+                    LastCupTime = group.Max(g => g.LastCupTime).TimeOfDay
                 })
                 .OrderBy(stats => stats.DayOfWeekNumber)
                 .ToList();
