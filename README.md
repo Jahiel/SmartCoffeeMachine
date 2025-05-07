@@ -102,7 +102,7 @@ SmartCoffeeMachine/
 | `/api/v1/CoffeeMachine/turn-off`      | POST   | Turn off machine               |
 | `/api/v1/CoffeeMachine/coffee`        | POST   | Make a cup of coffee           |
 | `/api/v1/CoffeeMachine/coffees/daily` | GET    | Daily cup statistics           |
-| `/api/v1/CoffeeMachine/coffees/weekly`| GET    | Hourly cup statistics          |
+| `/api/v1/CoffeeMachine/coffees/hourly`| GET    | Hourly cup statistics          |
 
 Full documentation available via Swagger.
 
