@@ -182,27 +182,39 @@ namespace SmartCoffeMachine.V1.Controllers
         [SwaggerResponse((int)HttpStatusCode.BadRequest, "Failed to retrieve coffees")]
         public IActionResult GetDailyCoffees()
         {
+            var averageCoffeesByDayOfWeek = _dbContext.Logs
+                .Where(log => log.Action == EnumLog.Coffee)
+                .GroupBy(log => new { log.DayOfWeekNumber, log.TimeStamp.Date })
+                .Select(group => new
+                {
+                    group.Key.DayOfWeekNumber,
+                    group.Key.Date,
+                    CoffeesCount = group.Count()
+                })
+                .GroupBy(day => day.DayOfWeekNumber)
+                .Select(group => new DailyCoffeeStats
+                {
+                    DayOfWeekNumber = group.Key,
+                    CoffeesMade = Math.Round(group.Average(g => g.CoffeesCount)),
+                    FirstCupTime = _dbContext.Logs
+                        .Where(log => log.Action == EnumLog.Coffee && log.DayOfWeekNumber == group.Key)
+                        .Min(log => log.TimeStamp).TimeOfDay,
+                    LastCupTime = _dbContext.Logs
+                        .Where(log => log.Action == EnumLog.Coffee && log.DayOfWeekNumber == group.Key)
+                        .Max(log => log.TimeStamp).TimeOfDay
+                })
+                .OrderBy(stats => stats.DayOfWeekNumber)
+                .ToList();
 
-            List<DailyCoffeeStats> weeklyStats = [.. _dbContext.Logs
-                    .Where(log => log.Action == EnumLog.Coffee)
-                    .GroupBy(log => new { log.DayOfWeekNumber, log.LogDate })
-                    .Select(group => new DailyCoffeeStats
-                    {
-                        DayOfWeekNumber = group.Key.DayOfWeekNumber,
-                        FirstCupTime = group.Min(log => log.TimeStamp).TimeOfDay,
-                        LastCupTime = group.Max(log => log.TimeStamp).TimeOfDay,
-                        CoffeesMade = group.Average(log => 1)
-                    })
-                    .OrderBy(stats => stats.DayOfWeekNumber)];
+            return Ok(averageCoffeesByDayOfWeek);
 
-            return Ok(weeklyStats);
         }
 
         /// <summary>
         /// Get the number of coffees made Hourly
         /// </summary>
         /// <returns>List of coffees made per week</returns>
-        [HttpGet("coffees/Hourly")]
+        [HttpGet("coffees/hourly")]
         [SwaggerResponse((int)HttpStatusCode.OK, "Coffees retrieved successfully", typeof(IEnumerable<HourlyCoffeeStats>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, "Failed to retrieve coffees")]
         public IActionResult GetWeeklyCoffees()
