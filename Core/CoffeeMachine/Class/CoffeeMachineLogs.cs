@@ -20,5 +20,11 @@ namespace SmartCoffeeMachine.Core.CoffeeMachine.Class
         public string? ResultsJson { get; set; }
 
         public string? ErrorMessage { get; set; }
+
+        public int DayOfWeekNumber { get; set; }
+
+        public int HourSlot { get; set; }
+
+        public DateOnly LogDate { get; set; }
     }
 }

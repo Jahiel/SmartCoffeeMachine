@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SmartCoffeeMachine.Core.CoffeeMachine.Class;
@@ -183,47 +182,43 @@ namespace SmartCoffeMachine.V1.Controllers
         [SwaggerResponse((int)HttpStatusCode.BadRequest, "Failed to retrieve coffees")]
         public IActionResult GetDailyCoffees()
         {
-            ///Possible evolution : Handle a page(s) parameter (in the route of the get) to get a fixed number of result and change page (1,2,3,...) on every call
-            var dailyStats = _dbContext.Logs
-                .Where(log => log.Action == EnumLog.Coffee)
-                .GroupBy(log => new { log.TimeStamp.Date })
-                .Select(group => new DailyCoffeeStats
-                {
-                    Date = group.Key.Date,
-                    CoffeesMade = group.Count()
-                })
-                .OrderBy(stats => stats.Date)
-                .ToList();
 
-            return Ok(dailyStats);
+            List<DailyCoffeeStats> weeklyStats = [.. _dbContext.Logs
+                    .Where(log => log.Action == EnumLog.Coffee)
+                    .GroupBy(log => new { log.DayOfWeekNumber, log.LogDate })
+                    .Select(group => new DailyCoffeeStats
+                    {
+                        DayOfWeekNumber = group.Key.DayOfWeekNumber,
+                        FirstCupTime = group.Min(log => log.TimeStamp).TimeOfDay,
+                        LastCupTime = group.Max(log => log.TimeStamp).TimeOfDay,
+                        CoffeesMade = group.Average(log => 1)
+                    })
+                    .OrderBy(stats => stats.DayOfWeekNumber)];
+
+            return Ok(weeklyStats);
         }
 
         /// <summary>
-        /// Get the number of coffees made weekly
+        /// Get the number of coffees made Hourly
         /// </summary>
         /// <returns>List of coffees made per week</returns>
-        [HttpGet("coffees/weekly")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "Coffees retrieved successfully", typeof(IEnumerable<WeeklyCoffeeStats>))]
+        [HttpGet("coffees/Hourly")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "Coffees retrieved successfully", typeof(IEnumerable<HourlyCoffeeStats>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, "Failed to retrieve coffees")]
         public IActionResult GetWeeklyCoffees()
         {
-            ///Possible evolution : Handle a page(s) parameter (in the route of the get) to get a fixed number of result and change page (1,2,3,...) on every call
-            var logs = _dbContext.Logs
-                .Where(log => log.Action == EnumLog.Coffee)
-                .ToList();
+            List<CoffeeMachineLogs> logs = [.. _dbContext.Logs.Where(log => log.Action == EnumLog.Coffee)];
 
-            var calendar = new GregorianCalendar();
-            var weeklyStats = logs
-                .GroupBy(log => calendar.GetWeekOfYear(log.TimeStamp.Date, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
-                .Select(group => new WeeklyCoffeeStats
+            List<HourlyCoffeeStats> hourlyStats = [.. logs
+                .GroupBy(log => log.TimeStamp.Hour)
+                .Select(group => new HourlyCoffeeStats
                 {
-                    Week = group.Key,
+                    Hour = group.Key,
                     CoffeesMade = group.Count()
                 })
-                .OrderBy(stats => stats.Week)
-                .ToList();
+                .OrderBy(stats => stats.Hour)];
 
-            return Ok(weeklyStats);
+            return Ok(hourlyStats);
         }
 
 
@@ -237,15 +232,22 @@ namespace SmartCoffeMachine.V1.Controllers
         {
             try
             {
-                await _dbContext.Logs.AddAsync(new CoffeeMachineLogs
+                DateTime now = DateTime.Now;
+                CoffeeMachineLogs logEntry = new()
                 {
                     Action = LogType,
                     Status = status,
-                    ResultsJson = JsonConvert.SerializeObject(model),
-                    TimeStamp = DateTime.Now,
-                    ParametersJson = JsonConvert.SerializeObject(parameters),
-                    ErrorMessage = errorMessage
-                });
+                    TimeStamp = now,
+                    ResultsJson = model != null ? JsonConvert.SerializeObject(model) : null,
+                    ParametersJson = parameters != null ? JsonConvert.SerializeObject(parameters) : null,
+                    ErrorMessage = errorMessage,
+                    //Specificities locale convention (sunday to 7 and not 0)
+                    DayOfWeekNumber = now.DayOfWeek == DayOfWeek.Sunday ? 7 : (int)now.DayOfWeek,
+                    HourSlot = now.Hour,
+                    LogDate = DateOnly.FromDateTime(now)
+                };
+
+                await _dbContext.Logs.AddAsync(logEntry);
                 await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)

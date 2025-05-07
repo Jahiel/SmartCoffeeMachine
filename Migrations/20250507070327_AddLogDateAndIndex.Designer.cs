@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartCoffeeMachine.Core.CoffeeMachine.Class;
 
@@ -11,9 +12,11 @@ using SmartCoffeeMachine.Core.CoffeeMachine.Class;
 namespace SmartCoffeeMachine.Migrations
 {
     [DbContext(typeof(CoffeeMachineDbContext))]
-    partial class CoffeeMachineDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250507070327_AddLogDateAndIndex")]
+    partial class AddLogDateAndIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

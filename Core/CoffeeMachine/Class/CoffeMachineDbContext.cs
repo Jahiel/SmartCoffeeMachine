@@ -41,6 +41,12 @@ namespace SmartCoffeeMachine.Core.CoffeeMachine.Class
 
                 entity.Property(e => e.ErrorMessage)
                       .HasColumnType("nvarchar(max)");
+
+                entity.Property(e => e.DayOfWeekNumber).IsRequired();
+                entity.Property(e => e.HourSlot).IsRequired();
+                entity.Property(e => e.LogDate).IsRequired();
+
+                entity.HasIndex(e => new { e.Action, e.DayOfWeekNumber, e.LogDate, e.HourSlot });
             });
         }
     }
